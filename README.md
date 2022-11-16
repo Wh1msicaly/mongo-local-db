@@ -1,23 +1,23 @@
 
-# MongoLS
+# Mongo-Local
 
 A JavaScript implementation of the mongo query api for plain objects and HTML5 localStorage.
 
-There are two main use cases that MongoLS targets:
+There are two main use cases that Mongo-Local targets:
 - providing a mongo interface to localStorage in HTML5 web browsers
 - for use as an in memory mongo database that can be used in the browser or nodejs
 
-[![Build Status](https://travis-ci.org/belteshazzar/MongoLS.svg?branch=master)](https://travis-ci.org/belteshazzar/MongoLS) [![Coverage Status](https://coveralls.io/repos/github/belteshazzar/MongoLS/badge.svg?branch=master)](https://coveralls.io/github/belteshazzar/MongoLS?branch=master)
+[![Build Status](https://travis-ci.org/belteshazzar/mongo-local.svg?branch=master)](https://travis-ci.org/belteshazzar/mongo-local) [![Coverage Status](https://coveralls.io/repos/github/belteshazzar/mongo-local/badge.svg?branch=master)](https://coveralls.io/github/belteshazzar/mongo-local?branch=master)
 
 ## In Node.js
 
 ### Installation
 
-  `npm install mongols`
+  `npm install mongo-local`
 
 ### Usage
 
-    var mongols = require('mongols');
+    var mongo = require('mongo-local');
     var db = new mongo.DB()
     db.createCollection("sample")
     db.sample.insert({ age: 4,	legs: 0	});
@@ -33,20 +33,20 @@ There are two main use cases that MongoLS targets:
 
 ## In the Browser
 
-For an example of MongoLS in the browser check out: http://belteshazzar.github.io/MongoLS/index.html
+For an example of Mongo-Local in the browser check out: http://belteshazzar.github.io/mongo-local/index.html
 
 ### Usage
 
-Download from here: https://raw.githubusercontent.com/belteshazzar/MongoLS/master/mongols.js
+Download from here: https://raw.githubusercontent.com/belteshazzar/mongo-local/master/mongo-local.js
 
 Include in your web page:
 
-    <script src="mongols.js"></script>
+    <script src="mongo-local.js"></script>
     
 Query localStorage or other collections (note that in the browser the localStorage collection is automatically created and because it is backed by HTML5 localStorage it will persist across multiple sessions):
 
     <script>
-       var db = new MongoLS.DB()
+       var db = new MongoLocal.DB()
        db.localStorage.insert({ age: 4,	legs: 0	});
        var cur = db.localStorage.find();
        alert(JSON.stringify(cur.toArray()));
