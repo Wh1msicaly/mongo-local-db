@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * MongoLocal.copy (Private Function)
+ * MongoLocalDB.copy (Private Function)
  */
 function copy(o) {
    var out, v, key;
@@ -14,7 +14,7 @@ function copy(o) {
 }
 
 /**
- * MongoLocal.getProp (Private Function)
+ * MongoLocalDB.getProp (Private Function)
  */
 function getProp(obj,name) {
 	var path = name.split("\.");
@@ -27,7 +27,7 @@ function getProp(obj,name) {
 }
 
 /**
- * MongoLocal.LocalStorageStore
+ * MongoLocalDB.LocalStorageStore
  * 
  * Singleton
  */
@@ -54,10 +54,10 @@ module.exports.LocalStorageStore = (function() {
 		}
 	};
 
-})(); // MongoLocal.LocalStorageStore
+})(); // MongoLocalDB.LocalStorageStore
 
 /**
- * MongoLocal.ObjectStore
+ * MongoLocalDB.ObjectStore
  * 
  * Public Constructor Function
  */
@@ -84,16 +84,16 @@ module.exports.ObjectStore = function() {
 		size : function() {
 			return Object.keys(objs).length;
 		}
-	}; // MongoLocal.ObjectStore return
-}; // MongoLocal.ObjectStore
+	}; // MongoLocalDB.ObjectStore return
+}; // MongoLocalDB.ObjectStore
 
 /**
- * MongoLocal.DB (Public Constructor)
+ * MongoLocalDB.DB (Public Constructor)
  */
 module.exports.DB = function(options) {
 
 	/**
-	 * MongoLocal.DB.log (Private Function)
+	 * MongoLocalDB.DB.log (Private Function)
 	 * 
 	 * @param {String} msg The message to display.
 	 */
@@ -103,7 +103,7 @@ module.exports.DB = function(options) {
 	}
 
 	/**
-	 * MongoLocal.DB.id (Private Function)
+	 * MongoLocalDB.DB.id (Private Function)
 	 */
 	function id() {
 		if (options && options.id) return options.id();
@@ -114,7 +114,7 @@ module.exports.DB = function(options) {
 	}
 
 	/**
-	 * MongoLocal.DB.toArray (Private Function)
+	 * MongoLocalDB.DB.toArray (Private Function)
 	 */
 	function toArray(obj) {
 		var arr = [];
@@ -129,7 +129,7 @@ module.exports.DB = function(options) {
 	}
 
 	/**
-	 * MongoLocal.DB.tlMatches
+	 * MongoLocalDB.DB.tlMatches
 	 * 
 	 * Private Function
 	 */
@@ -150,7 +150,7 @@ module.exports.DB = function(options) {
 	}
 
 	/**
-	 * MongoLocal.DB.opMatches
+	 * MongoLocalDB.DB.opMatches
 	 * 
 	 * Private Function
 	 */
@@ -209,10 +209,10 @@ module.exports.DB = function(options) {
 				}
 			}
 		}
-	} // MongoLocal.DB.opMatches
+	} // MongoLocalDB.DB.opMatches
 
 	/**
-	 * MongoLocal.DB.and
+	 * MongoLocalDB.DB.and
 	 * 
 	 * Private Function
 	 */
@@ -226,7 +226,7 @@ module.exports.DB = function(options) {
 	}
 
 	/**
-	 * MongoLocal.DB.or
+	 * MongoLocalDB.DB.or
 	 * 
 	 * Private Function
 	 */
@@ -238,7 +238,7 @@ module.exports.DB = function(options) {
 	}
 
 	/**
-	 * MongoLocal.DB.nor
+	 * MongoLocalDB.DB.nor
 	 * 
 	 * Private Function
 	 */
@@ -250,7 +250,7 @@ module.exports.DB = function(options) {
 	}
 	
 	/**
-	 * MongoLocal.DB.isArray
+	 * MongoLocalDB.DB.isArray
 	 * 
 	 * Private Function
 	 */
@@ -259,7 +259,7 @@ module.exports.DB = function(options) {
 	}
 
 	/**
-	 * MongoLocal.DB.matches
+	 * MongoLocalDB.DB.matches
 	 * 
 	 * Private Function
 	 */
@@ -270,7 +270,7 @@ module.exports.DB = function(options) {
 	}
 
 	/**
-	 * MongoLocal.DB.isIn
+	 * MongoLocalDB.DB.isIn
 	 * 
 	 * Private Function
 	 */
@@ -280,7 +280,7 @@ module.exports.DB = function(options) {
 	}
 
 	/**
-	 * MongoLocal.DB.arrayMatches
+	 * MongoLocalDB.DB.arrayMatches
 	 * 
 	 * Private Function
 	 */
@@ -303,7 +303,7 @@ module.exports.DB = function(options) {
 	}
 
 	/**
-	 * MongoLocal.DB.objectMatches
+	 * MongoLocalDB.DB.objectMatches
 	 * 
 	 * Private Function
 	 */
@@ -330,7 +330,7 @@ module.exports.DB = function(options) {
 	}
 
 	/**
-	 * MongoLocal.DB.applyProjection
+	 * MongoLocalDB.DB.applyProjection
 	 * 
 	 * Private Function
 	 */
@@ -356,10 +356,10 @@ module.exports.DB = function(options) {
 			}
 		}
 		return result;
-	} // MongoLocal.DB.applyProjection
+	} // MongoLocalDB.DB.applyProjection
 
 	/**
-	 * MongoLocal.DB.applyUpdates
+	 * MongoLocalDB.DB.applyUpdates
 	 * 
 	 * Private Function
 	 */
@@ -494,10 +494,10 @@ module.exports.DB = function(options) {
 				throw "unknown update operator: " + key;
 			}
 		}
-	} // MongoLocal.DB.applyUpdates
+	} // MongoLocalDB.DB.applyUpdates
 
 	/**
-	 * MongoLocal.DB.createDocFromUpdate
+	 * MongoLocalDB.DB.createDocFromUpdate
 	 * 
 	 * Private Function
 	 */
@@ -523,18 +523,18 @@ module.exports.DB = function(options) {
 			applyUpdates(updates,newDoc,true);
 		}
 		return newDoc;
-	} // MongoLocal.DB.createDocFromUpdate
+	} // MongoLocalDB.DB.createDocFromUpdate
 
 
 	/**
-	 * MongoLocal.DB.Collection
+	 * MongoLocalDB.DB.Collection
 	 * 
 	 * Private Constructor Function 
 	 */
 	function Collection(db,storage) {
 
 		/**
-		 * MongoLocal.DB.Collection.Cursor
+		 * MongoLocalDB.DB.Collection.Cursor
 		 * 
 		 * Private Constructor Function
 		 */
@@ -633,10 +633,10 @@ module.exports.DB = function(options) {
 			};
 
 			this.next();
-		} // MongoLocal.DB.Collection.Cursor
+		} // MongoLocalDB.DB.Collection.Cursor
 
 		/**
-		 * MongoLocal.DB.Collection.SortedCursor
+		 * MongoLocalDB.DB.Collection.SortedCursor
 		 * 
 		 * Private Constructor Function
 		 */
@@ -718,10 +718,10 @@ module.exports.DB = function(options) {
 				}
 				return results;
 			};
-		} // MongoLocal.DB.Collection.SortedCursor
+		} // MongoLocalDB.DB.Collection.SortedCursor
 
 		/**
-		 * MongoLocal.DB.Collection
+		 * MongoLocalDB.DB.Collection
 		 * 
 		 * Public Members
 		 */
@@ -945,11 +945,11 @@ module.exports.DB = function(options) {
 				}
 			},
 			validate : function() { throw "Not Implemented"; }
-		}; // MongoLocal.DB.Collection return
-	}; // MongoLocal.DB.Collection
+		}; // MongoLocalDB.DB.Collection return
+	}; // MongoLocalDB.DB.Collection
 
 	/**
-	 * MongoLocal.DB
+	 * MongoLocalDB.DB
 	 * 
 	 * Public Members
 	 */
@@ -1026,7 +1026,7 @@ module.exports.DB = function(options) {
 		version : function() { throw "Not Implemented"; },
 		upgradeCheck : function() { throw "Not Implemented"; },
 		upgradeCheckAllDBs : function() { throw "Not Implemented"; }
-	}; // MongoLocal.DB return
+	}; // MongoLocalDB.DB return
 
-}; // MongoLocal.DB
+}; // MongoLocalDB.DB
 

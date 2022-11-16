@@ -1,16 +1,16 @@
 {
-  "name": "mongo-local",
+  "name": "mongo-local-db",
   "version": "1.0.4",
   "description": "mongo api interface to localStorage and plain js objects",
   "main": "main.js",
   "scripts": {
     "test": "mocha --reporter spec",
     "cover": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec test/*",
-    "build-js": "browserify mongo-local-web.js -o mongo-local.js"
+    "build-js": "browserify mongo-local-db-web.js -o mongo-local-db.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/belteshazzar/mongo-local.git"
+    "url": "git+https://github.com/belteshazzar/mongo-local-db.git"
   },
   "keywords": [
     "mongo",
@@ -25,9 +25,9 @@
   "author": "Daniel Walton <daniel@belteshazzar.com> (http://www.belteshazzar.com)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/belteshazzar/mongo-local/issues"
+    "url": "https://github.com/belteshazzar/mongo-local-db/issues"
   },
-  "homepage": "https://github.com/belteshazzar/mongo-local#readme",
+  "homepage": "https://github.com/belteshazzar/mongo-local-db#readme",
   "devDependencies": {
     "babel": "^6.5.2",
     "browserify": "latest",
