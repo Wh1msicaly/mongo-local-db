@@ -1,6 +1,6 @@
 {
   "name": "mongo-local-db",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "mongo api interface to localStorage and plain js objects",
   "main": "main.js",
   "scripts": {
