@@ -1,4 +1,4 @@
-'use strict';
+
 
 /**
  * MongoLocalDB.copy (Private Function)
@@ -31,7 +31,7 @@ function getProp(obj,name) {
  * 
  * Singleton
  */
-module.exports.LocalStorageStore = (function() {
+export const LocalStorageStore = (function() {
 
 	return {
 		clear : function() {
@@ -61,7 +61,7 @@ module.exports.LocalStorageStore = (function() {
  * 
  * Public Constructor Function
  */
-module.exports.ObjectStore = function() {
+export const ObjectStore = function() {
 
 	var objs = {};
 
@@ -90,7 +90,7 @@ module.exports.ObjectStore = function() {
 /**
  * MongoLocalDB.DB (Public Constructor)
  */
-module.exports.DB = function(options) {
+export function DB(options) {
 
 	/**
 	 * MongoLocalDB.DB.log (Private Function)
@@ -551,6 +551,7 @@ module.exports.DB = function(options) {
 				while (pos<collection.count() && (max==0 || pos<max)) {
 					var cur = storage.get(pos++);
 					if (matches(cur,query)) {
+						console.log('test doc',cur,query)
 						next = cur;
 						return;
 					}
@@ -960,8 +961,8 @@ module.exports.DB = function(options) {
 		copyDatabase : function() { throw "Not Implemented"; },
 		createCollection : function(name) {
 			if (!name) return;
-			if (name=="localStorage") this.localStorage = new Collection(this,(options.localStorage?options.localStorage:module.exports.LocalStorageStore));
-			else this[name] = new Collection(this,(options && options.storage?new options.storage():new module.exports.ObjectStore()));
+			if (name=="localStorage") this.localStorage = new Collection(this,(options.localStorage?options.localStorage:LocalStorageStore));
+			else this[name] = new Collection(this,(options && options.storage?new options.storage():new ObjectStore()));
 		},
 		currentOp : function() { throw "Not Implemented"; },
 		dropDatabase : function() {
@@ -1007,7 +1008,7 @@ module.exports.DB = function(options) {
 		killOp : function() { throw "Not Implemented"; },
 		listCommands : function() { throw "Not Implemented"; },
 		loadServerScripts : function() { throw "Not Implemented"; },
-		localStorage : (typeof localStorage!="undefined"?new Collection(this,module.exports.LocalStorageStore):null),
+		localStorage : (typeof localStorage!="undefined"?new Collection(this,LocalStorageStore):null),
 		logout : function() { throw "Not Implemented"; },
 		printCollectionStats : function() { throw "Not Implemented"; },
 		printReplicationInfo : function() { throw "Not Implemented"; },

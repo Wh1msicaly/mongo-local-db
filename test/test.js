@@ -1,7 +1,7 @@
-'use strict';
 
-var expect = require('chai').expect;
-var MongoLS = require('../main.js');
+
+import {expect} from 'chai';
+import * as mongo from '../main.js'
 
 describe("DB no options", function() {
 
@@ -14,7 +14,7 @@ describe("DB no options", function() {
 	});
 
 	beforeEach(function() {
-		db = new MongoLS.DB();
+		db = new mongo.DB();
 	});
 
 	afterEach(function() {
@@ -58,7 +58,7 @@ describe("DB", function() {
 	});
 
 	beforeEach(function() {
-		db = new MongoLS.DB({
+		db = new mongo.DB({
 			print : console.log
 		});
 	});
