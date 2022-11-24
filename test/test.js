@@ -101,7 +101,8 @@ describe("DB", function() {
 			db[collectionName].insert({ age: 4,	legs: 0	});
 			db[collectionName].insert([{ age: 4,	legs: 5	},{ age: 54, legs: 2	}]);
 			db[collectionName].insertMany([{ age: 54, legs: 12 },{ age: 16					 }]);
-			db[collectionName].insertOne({ name: "steve"		 });
+			db[collectionName].insertOne({ name: "steve", _text: "this is a text string with paris and london"		 });
+
 		}
 		
 		function testFind(q) { 
@@ -112,9 +113,9 @@ describe("DB", function() {
 					results.push(docs.next());
 				}
 	
-				for (var i=0 ; i<results.length ; i++) {
-					//console.log(JSON.stringify(results[i]));
-				}
+				// for (var i=0 ; i<results.length ; i++) {
+				// 	//console.log(JSON.stringify(results[i]));
+				// }
 				return results;
 			} catch (e) {
 				//console.log(JSON.stringify(e));
@@ -307,6 +308,28 @@ describe("DB", function() {
 			var docs = testFind({ age: {$gt:3, lt: 7}});
 			if (docs.$err!="Can't canonicalize query: BadValue unknown operator: lt") throw "fail";
 		});
+
+		it('should find text', function() {
+			var docs = testFind({ $text: { $search: "pari" } })
+			expect(docs).to.not.be.null
+			expect(docs.$err).to.be.undefined
+			expect(docs.length).to.equal(1)
+		})
+
+		it('should not find text', function() {
+			var docs = testFind({ $text: { $search: "fred" } })
+			expect(docs).to.not.be.null
+			expect(docs.$err).to.be.undefined
+			expect(docs.length).to.equal(0)
+		})
+
+		it('should find text in and', function() {
+			var docs = testFind({ $and: [ { $text: { $search: "pari" } },{ $text: { $search: "lond" } } ]})
+			console.log(docs)
+			expect(docs).to.not.be.null
+			expect(docs.$err).to.be.undefined
+			expect(docs.length).to.equal(1)
+		})
 		
 		/************************************************************************
 		 * 

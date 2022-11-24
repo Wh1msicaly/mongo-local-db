@@ -1,4 +1,5 @@
 
+import {Txi} from 'txi'
 
 /**
  * MongoLocalDB.copy (Private Function)
@@ -46,7 +47,10 @@ export const LocalStorageStore = (function() {
 		remove : function(key) {
 			localStorage.removeItem(key);
 		},
-		set : function(key,val) {
+		set : async function(key,val) {
+			if (val._text !== undefined) {
+				val._index = new Txi().index(key,val._text).getIndex()
+			}
 			localStorage.setItem(key,JSON.stringify(val));
 		},
 		size : function() {
@@ -79,6 +83,9 @@ export const ObjectStore = function() {
 			delete objs[key];
 		},
 		set : function(key,val) {
+			if (val._text !== undefined) {
+				val._index = new Txi().index(key,val._text).getIndex()
+			}
 			objs[key] = val;
 		},
 		size : function() {
@@ -143,6 +150,7 @@ export function DB(options) {
 			else if (key=="$not") return not(doc,value);
 			else if (key=="$nor") return nor(doc,value);
 			else if (key=="$where") return where(doc,value);
+			else if (key=='$text') return text(doc,value);
 			else throw { $err : "Can't canonicalize query: BadValue unknown top level operator: " + key, code: 17287 };
 		} else {
 			return opMatches(doc,key,value);
@@ -210,6 +218,23 @@ export function DB(options) {
 			}
 		}
 	} // MongoLocalDB.DB.opMatches
+
+	/**
+	 * MongoLocalDB.DB.text
+	 * 
+	 * Private Function
+	 */
+	function text(doc,els) {
+		if (doc._index === undefined) return false
+		if (els.$search == undefined) return false
+		const search = new Txi().setIndex(doc._index).search(els.$search)
+		if (search.length==1) {
+			if (doc._search === undefined) doc._search = {}
+			doc._search[els.$search] = search[0]
+			return true
+		}
+		return false
+	}
 
 	/**
 	 * MongoLocalDB.DB.and
@@ -551,7 +576,6 @@ export function DB(options) {
 				while (pos<collection.count() && (max==0 || pos<max)) {
 					var cur = storage.get(pos++);
 					if (matches(cur,query)) {
-						console.log('test doc',cur,query)
 						next = cur;
 						return;
 					}
