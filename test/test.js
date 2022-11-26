@@ -1,5 +1,4 @@
 
-
 import {expect} from 'chai';
 import * as mongo from '../main.js'
 
@@ -95,30 +94,150 @@ describe("DB", function() {
 	describe('Collection', function() {
 	
 		var collectionName = "myCollection";
-	
+
+		const topLeft = [
+			129.64116138266587,
+			-26.495442099101886
+		  ];
+
+		const bottomRight = [
+			140.60850132443136,
+			-35.787710083490815
+		  ];
+
+		const polygonInBox = {
+			"type": "FeatureCollection",
+			"features": [
+			  {
+				"type": "Feature",
+				"properties": {},
+				"geometry": {
+				  "coordinates": [
+					[
+					  [
+						135.35156670215986,
+						-28.186307569105537
+					  ],
+					  [
+						134.55964429902428,
+						-29.938596403715188
+					  ],
+					  [
+						135.83029451355912,
+						-31.81378949724759
+					  ],
+					  [
+						137.75466598994808,
+						-31.60617146198912
+					  ],
+					  [
+						138.61178466866698,
+						-29.379281194259832
+					  ],
+					  [
+						137.52154925127422,
+						-27.656279872961044
+					  ],
+					  [
+						135.35156670215986,
+						-28.186307569105537
+					  ]
+					]
+				  ],
+				  "type": "Polygon"
+				}
+			  }
+			]
+		  };
+		const pointInBox = {
+			"type": "FeatureCollection",
+			"features": [
+			  {
+				"type": "Feature",
+				"properties": {},
+				"geometry": {
+				  "coordinates": [
+					136.0572329703059,
+					-33.100968957111704
+				  ],
+				  "type": "Point"
+				}
+			  }
+			]
+		  };
+
+		const pointNotInBox = {
+			"type": "FeatureCollection",
+			"features": [
+			  {
+				"type": "Feature",
+				"properties": {},
+				"geometry": {
+				  "coordinates": [
+					146.22309564414053,
+					-27.353479329645545
+				  ],
+				  "type": "Point"
+				}
+			  }
+			]
+		  };
+
+		const partiallyInBox = {
+			"type": "FeatureCollection",
+			"features": [
+			  {
+				"type": "Feature",
+				"properties": {},
+				"geometry": {
+				  "coordinates": [
+					[
+					  [
+						134.77919638975504,
+						-30.92126050109725
+					  ],
+					  [
+						134.77919638975504,
+						-32.29700946798877
+					  ],
+					  [
+						146.3983598387441,
+						-32.29700946798877
+					  ],
+					  [
+						146.3983598387441,
+						-30.92126050109725
+					  ],
+					  [
+						134.77919638975504,
+						-30.92126050109725
+					  ]
+					]
+				  ],
+				  "type": "Polygon"
+				}
+			  }
+			]
+		  };
+
 		function initDB() {
 			db.createCollection(collectionName);
-			db[collectionName].insert({ age: 4,	legs: 0	});
-			db[collectionName].insert([{ age: 4,	legs: 5	},{ age: 54, legs: 2	}]);
-			db[collectionName].insertMany([{ age: 54, legs: 12 },{ age: 16					 }]);
-			db[collectionName].insertOne({ name: "steve", _text: "this is a text string with paris and london"		 });
+			db[collectionName].insert({ age: 4,	legs: 0, geojson: polygonInBox });
+			db[collectionName].insert([{ age: 4, legs: 5, geojson: pointInBox },{ age: 54, legs: 2, geojson: pointNotInBox }]);
+			db[collectionName].insertMany([{ age: 54, legs: 12 },{ age: 16, geojson: partiallyInBox }]);
+			db[collectionName].insertOne({ name: "steve", text: "this is a text string with paris and london", geojson: pointInBox });
 
 		}
 		
 		function testFind(q) { 
 			try {
 				var results = [];
-				var docs = db[collectionName].find(q);//.sort({ age: 1, legs: -1 });
+				var docs = db[collectionName].find(q);
 				while (docs.hasNext()) {
 					results.push(docs.next());
 				}
-	
-				// for (var i=0 ; i<results.length ; i++) {
-				// 	//console.log(JSON.stringify(results[i]));
-				// }
 				return results;
 			} catch (e) {
-				//console.log(JSON.stringify(e));
 				return e;
 			}
 		}
@@ -284,7 +403,6 @@ describe("DB", function() {
 		 */
 		it('should testFind8', function() {
 			var docs = testFind({ age: {gt:3, $lt: 7}});
-			console.log(docs);
 			if (docs.length!=0) throw "fail";
 		});
 
@@ -309,23 +427,44 @@ describe("DB", function() {
 			if (docs.$err!="Can't canonicalize query: BadValue unknown operator: lt") throw "fail";
 		});
 
+		/************************************************************************
+		 * 
+		 */
+
 		it('should find text', function() {
-			var docs = testFind({ $text: { $search: "pari" } })
+			var docs = testFind({ text: {$text: "pari" }})
 			expect(docs).to.not.be.null
 			expect(docs.$err).to.be.undefined
 			expect(docs.length).to.equal(1)
 		})
 
 		it('should not find text', function() {
-			var docs = testFind({ $text: { $search: "fred" } })
+			var docs = testFind({ text: {$text: "fred"} })
 			expect(docs).to.not.be.null
 			expect(docs.$err).to.be.undefined
 			expect(docs.length).to.equal(0)
 		})
 
 		it('should find text in and', function() {
-			var docs = testFind({ $and: [ { $text: { $search: "pari" } },{ $text: { $search: "lond" } } ]})
-			console.log(docs)
+			var docs = testFind({ $and: [ { text: { $text: "pari"} },{ text: { $text: "lond" }} ]})
+			expect(docs).to.not.be.null
+			expect(docs.$err).to.be.undefined
+			expect(docs.length).to.equal(1)
+		})
+
+		/************************************************************************
+		 * 
+		 */
+		  
+		 it('should geo within bbox', function() {
+			var docs = testFind({ geojson: { $geoWithin: [ topLeft, bottomRight ] }})
+			expect(docs).to.not.be.null
+			expect(docs.$err).to.be.undefined
+			expect(docs.length).to.equal(3)
+		})
+
+		it('should geo witin in and', function() {
+			var docs = testFind({ $and: [ { text: {$text: "pari" }},{ geojson: { $geoWithin: [ topLeft, bottomRight ] }} ]})
 			expect(docs).to.not.be.null
 			expect(docs.$err).to.be.undefined
 			expect(docs.length).to.equal(1)

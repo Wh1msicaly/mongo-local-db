@@ -2,7 +2,7 @@
 import json from '@rollup/plugin-json';
 import { terser } from 'rollup-plugin-terser';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
-//import commonjs from '@rollup/plugin-commonjs';
+import commonjs from '@rollup/plugin-commonjs';
 import pkg from './package.json'
 
 export default {
@@ -19,5 +19,5 @@ export default {
     plugins: [terser()],
     sourcemap: true
   }],
-plugins: [json(),nodeResolve()/*,commonjs()*/]
+plugins: [json(),nodeResolve(),commonjs()]
 };

@@ -1,5 +1,7 @@
 
 import {Txi} from 'txi'
+import * as de9im from 'de9im';
+import util from 'util'
 
 /**
  * MongoLocalDB.copy (Private Function)
@@ -48,9 +50,6 @@ export const LocalStorageStore = (function() {
 			localStorage.removeItem(key);
 		},
 		set : async function(key,val) {
-			if (val._text !== undefined) {
-				val._index = new Txi().index(key,val._text).getIndex()
-			}
 			localStorage.setItem(key,JSON.stringify(val));
 		},
 		size : function() {
@@ -83,9 +82,6 @@ export const ObjectStore = function() {
 			delete objs[key];
 		},
 		set : function(key,val) {
-			if (val._text !== undefined) {
-				val._index = new Txi().index(key,val._text).getIndex()
-			}
 			objs[key] = val;
 		},
 		size : function() {
@@ -141,7 +137,6 @@ export function DB(options) {
 	 * Private Function
 	 */
 	function tlMatches(doc,query) {
-		// console.log("tlMatches ::: " + JSON.stringify(query));
 		var key = Object.keys(query)[0];
 		var value = query[key];
 		if (key.charAt(0)=="$") {
@@ -150,7 +145,6 @@ export function DB(options) {
 			else if (key=="$not") return not(doc,value);
 			else if (key=="$nor") return nor(doc,value);
 			else if (key=="$where") return where(doc,value);
-			else if (key=='$text') return text(doc,value);
 			else throw { $err : "Can't canonicalize query: BadValue unknown top level operator: " + key, code: 17287 };
 		} else {
 			return opMatches(doc,key,value);
@@ -163,8 +157,6 @@ export function DB(options) {
 	 * Private Function
 	 */
 	function opMatches(doc,key,value) {
-		// console.log("opMatches[doc: " + JSON.stringify(doc) + ", key=" + key +
-		// ",value: " + JSON.stringify(value) +"]");
 		if (typeof(value)=="string") return getProp(doc,key)==value;
 		else if (typeof(value)=="number") return getProp(doc,key)==value;
 		else if (typeof(value)=="boolean") return getProp(doc,key)==value;
@@ -203,7 +195,9 @@ export function DB(options) {
 						} else if (operator=="$regex") {
 							if (getProp(doc,key)==undefined || !getProp(doc,key).match(operand)) return false;
 						} else if (operator=="$text") {
-							throw { $err : "$text search is not supported"};
+							if (getProp(doc,key)==undefined ||  !text(getProp(doc,key),operand)) return false;
+						} else if (operator=="$geoWithin") {
+							if (getProp(doc,key)==undefined ||  !geoWithin(getProp(doc,key),operand)) return false;
 						} else if (operator=="$not") {
 							if (opMatches(doc,key,operand)) return false;
 						} else {
@@ -212,7 +206,6 @@ export function DB(options) {
 					}
 					return true;
 				} else {
-					console.log("comparing: " + getProp(doc,key) + " with " + value);
 					return getProp(doc,key) && objectMatches(getProp(doc,key),value);
 				}
 			}
@@ -224,16 +217,57 @@ export function DB(options) {
 	 * 
 	 * Private Function
 	 */
-	function text(doc,els) {
-		if (doc._index === undefined) return false
-		if (els.$search == undefined) return false
-		const search = new Txi().setIndex(doc._index).search(els.$search)
-		if (search.length==1) {
-			if (doc._search === undefined) doc._search = {}
-			doc._search[els.$search] = search[0]
-			return true
+	function text(prop,query) {
+		const txi = new Txi().index('id',prop)
+		const search = txi.search(query)
+		return search.length == 1
+	}
+
+	//   { "type": "Feature",
+	//   "geometry": {
+	// 	"type": "Polygon",
+	// 	"coordinates": [[
+	// 	  [-10.0, -10.0], [10.0, -10.0], [10.0, 10.0], [-10.0, 10.0]
+	// 	  ]]
+	// 	}
+	//   ...
+	//   }
+
+	function bboxToGeojson(bbox) {
+		const minLon = bbox[0][0]
+		const maxLat = bbox[0][1]
+		const maxLon = bbox[1][0]
+		const minLat = bbox[1][1]
+		return {
+			type: 'FeatureCollection',
+			features: [{
+				type: 'Feature',
+				properties: {},
+				geometry: {
+					type: 'Polygon',
+					coordinates: [[
+						[minLon,maxLat],
+						[minLon,minLat],
+						[maxLon,minLat],
+						[maxLon,maxLat],
+						[minLon,maxLat]
+					]]
+				}
+			}]
 		}
-		return false
+	}
+
+	/**
+	 * MongoLocalDB.DB.geoWithin
+	 * 
+	 * Private Function
+	 */
+	 function geoWithin(prop,query) {
+		try {
+			return de9im.default.within(prop,bboxToGeojson(query),false)
+		} catch (e) {
+			return false
+		}
 	}
 
 	/**
