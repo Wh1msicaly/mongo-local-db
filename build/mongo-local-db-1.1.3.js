@@ -1,5 +1,3 @@
-import 'util';
-
 function _copy(data) {
 	const type = typeof(data);
 	if(data && type==="object") {
@@ -34265,4 +34263,4 @@ function DB(options) {
 }
 
 export { DB, LocalStorageStore, ObjectStore };
-//# sourceMappingURL=mongo-local-db-1.1.2.js.map
+//# sourceMappingURL=mongo-local-db-1.1.3.js.map
