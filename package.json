@@ -9,7 +9,8 @@
     "build": "rollup --config",
     "postbuild": "./node_modules/.bin/copyfiles build/* public/.",
     "preit": "./node_modules/.bin/http-server &",
-    "it": "mocha test/test-browser.js \n pkill http-server"
+    "it": "mocha test/test-browser.js \n pkill http-server",
+    "postit": "rm -rf public/build"
   },
   "type": "module",
   "repository": {
