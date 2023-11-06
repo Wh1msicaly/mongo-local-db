@@ -3,6 +3,8 @@ import {Txi} from 'txi'
 import * as de9im from 'de9im';
 import { LocalStorage } from "node-localstorage";
 const NodeLocalStorage = LocalStorage
+import ObjectID from "mongo-objectid"; 
+
 /**
  * MongoLocalDB.copy (Private Function)
  */
@@ -41,7 +43,7 @@ export const NodeLocalStorageStore = (function(sub) {
 			localStorage.clear()
 		},
 		get : function(i) {
-			return localStorage.getItem(key)
+			return JSON.parse(localStorage.getItem(localStorage.key(i)));
 		},
 		getStore : function() {
 			return localStorage;
@@ -50,7 +52,7 @@ export const NodeLocalStorageStore = (function(sub) {
 			localStorage.removeItem(key)
 		},
 		set : function(key,val) {
-			localStorage.setItem(key, val)
+			localStorage.setItem(key,JSON.stringify(val));
 		},
 		size : function() {
 			return localStorage.length; 
@@ -138,10 +140,7 @@ export function DB(options) {
 	 */
 	function id() {
 		if (options && options.id) return options.id();
-		else return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-			var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-			return v.toString(16);
-		});
+		else return new ObjectID().toString() 
 	}
 
 	/**
@@ -197,6 +196,7 @@ export function DB(options) {
 					for (var i=0 ; i<keys.length ; i++) {
 						var operator = Object.keys(value)[i];
 						var operand = value[operator];
+
 						if (operator=="$eq") {
 							if (getProp(doc,key)==undefined || !(getProp(doc,key) == operand)) return false;
 						} else if (operator=="$gt") {
