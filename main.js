@@ -1,7 +1,8 @@
 
 import {Txi} from 'txi'
 import * as de9im from 'de9im';
-
+import { LocalStorage } from "node-localstorage";
+const NodeLocalStorage = LocalStorage
 /**
  * MongoLocalDB.copy (Private Function)
  */
@@ -27,7 +28,35 @@ function getProp(obj,name) {
 	}
 	return result;
 }
+/**
+ * MonogLocalDB.NodeLocalStorageStore
+ * 
+ * Singleton (forked bit)
+ */
+export const NodeLocalStorageStore = (function(sub) {
+	let localStorage = new NodeLocalStorage(sub) 
 
+	return {
+		clear : function() {
+			localStorage.clear()
+		},
+		get : function(i) {
+			return localStorage.getItem(key)
+		},
+		getStore : function() {
+			return localStorage;
+		},
+		remove : function(key) {
+			localStorage.removeItem(key)
+		},
+		set : function(key,val) {
+			localStorage.setItem(key, val)
+		},
+		size : function() {
+			return localStorage.length; 
+		} 
+	}
+}) 
 /**
  * MongoLocalDB.LocalStorageStore
  * 
@@ -1016,8 +1045,12 @@ export function DB(options) {
 		cloneDatabase : function() { throw "Not Implemented"; },
 		commandHelp : function() { throw "Not Implemented"; },
 		copyDatabase : function() { throw "Not Implemented"; },
-		createCollection : function(name) {
+		createCollection : function(name, arr) {
 			if (!name) return;
+			if (name=="node-localStorage") {
+				if (!arr) return; 
+				this[arr[0]] = new Collection(this, new NodeLocalStorageStore(arr[1]))
+			}
 			if (name=="localStorage") this.localStorage = new Collection(this,(options.localStorage?options.localStorage:LocalStorageStore));
 			else this[name] = new Collection(this,(options && options.storage?new options.storage():new ObjectStore()));
 		},
