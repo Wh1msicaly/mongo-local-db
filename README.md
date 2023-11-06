@@ -13,7 +13,7 @@ There are two main use cases that Mongo-Local-DB targets:
 
 ### Installation
 
-  `npm install mongo-local-db`
+  `npm install https://github.com/Wh1msicaly/mongo-local-db`
 
 ### Usage
 
