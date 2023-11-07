@@ -15,7 +15,7 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/belteshazzar/mongo-local-db.git"
+    "url": "https://github.com/Wh1msicaly/mongo-local-db.git"
   },
   "keywords": [
     "mongo",
