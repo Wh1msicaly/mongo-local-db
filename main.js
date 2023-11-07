@@ -125,8 +125,6 @@ export const FilterArray = function(array, filter) {
 		for (let key of Object.keys(filter)) {
 			for(let operator of Object.keys(filter[key])) {
 				let operand = filter[key][operator]
-				
-				console.log(key, operator, operand, getProp(doc,key))
 
 				if (operator=="$eq") {
 					if (getProp(doc,key)==undefined || !(getProp(doc,key) == operand)) return false;
