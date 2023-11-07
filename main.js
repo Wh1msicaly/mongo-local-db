@@ -120,6 +120,54 @@ export const ObjectStore = function() {
 	}; // MongoLocalDB.ObjectStore return
 }; // MongoLocalDB.ObjectStore
 
+export const FilterArray = function(array, filter) {
+	return array.filter(function(doc) {
+		for (let key of Object.keys(filter)) {
+			for(let operator of Object.keys(filter[key])) {
+				let operand = filter[key][operator]
+				
+				console.log(key, operator, operand, getProp(doc,key))
+
+				if (operator=="$eq") {
+					if (getProp(doc,key)==undefined || !(getProp(doc,key) == operand)) return false;
+				} else if (operator=="$gt") {
+					if (getProp(doc,key)==undefined || !(getProp(doc,key) > operand)) return false;
+				} else if (operator=="$gte") {
+					if (getProp(doc,key)==undefined || !(getProp(doc,key) >= operand)) return false;
+				} else if (operator=="$lt") {
+					if (getProp(doc,key)==undefined || !(getProp(doc,key) < operand)) return false;
+				} else if (operator=="$lte") {
+					if (getProp(doc,key)==undefined || !(getProp(doc,key) <= operand)) return false;
+				} else if (operator=="$ne") {
+					if (getProp(doc,key)==undefined || !(getProp(doc,key) != operand)) return false;
+				} else if (operator=="$in") {
+					if (getProp(doc,key)==undefined || !isIn(getProp(doc,key),operand)) return false;
+				} else if (operator=="$nin") {
+					if (getProp(doc,key)==undefined ||  isIn(getProp(doc,key),operand)) return false;
+				} else if (operator=="$exists") {
+					if (operand?getProp(doc,key)==undefined:getProp(doc,key)!=undefined) return false;
+				} else if (operator=="$type") {
+					if (typeof(getProp(doc,key))!=operand) return false;
+				} else if (operator=="$mod") {
+					if (operand.length!=2) throw { $err : "Can't canonicalize query: BadValue malformed mod, not enough elements", code : 17287 };
+					if (getProp(doc,key)==undefined || (getProp(doc,key) % operand[0] != operand[1])) return false;
+				} else if (operator=="$regex") {
+					if (getProp(doc,key)==undefined || !getProp(doc,key).match(operand)) return false;
+				} else if (operator=="$text") {
+					if (getProp(doc,key)==undefined ||  !text(getProp(doc,key),operand)) return false;
+				} else if (operator=="$geoWithin") {
+					if (getProp(doc,key)==undefined ||  !geoWithin(getProp(doc,key),operand)) return false;
+				} else if (operator=="$not") {
+					if (opMatches(doc,key,operand)) return false;
+				} else {
+					throw { $err : "Can't canonicalize query: BadValue unknown operator: " + operator, code : 17287 };
+				}
+			}
+		}
+
+		return true;
+	})
+}
 /**
  * MongoLocalDB.DB (Public Constructor)
  */
@@ -797,13 +845,25 @@ export function DB(options) {
 			this.sort = function(s) {
 				return new SortedCursor(collection,query,this,s);
 			};
+			this.point = function(key, value) {
+				let i = 0; 
+				while(items[i]) { 
+					let doc = items[i] 
+					if (doc[key] == value) {
+						items = items.slice(i, items.length)
+						break; 
+					}
+
+					i++;
+				}
+			}
+			this.filter = function(filter) {
+				items = FilterArray(items, filter)
+				return this; 
+			}
 			this.tailable = function() { throw "Not Implemented"; };
 			this.toArray = function() {
-				var results = [];
-				while (this.hasNext()) {
-					results.push(this.next());
-				}
-				return results;
+				return items;
 			};
 		} // MongoLocalDB.DB.Collection.SortedCursor
 
