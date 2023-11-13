@@ -847,7 +847,7 @@ export function DB(options) {
 				let i = 0; 
 				while(items[i]) { 
 					let doc = items[i] 
-					if (doc[key] >= value) {
+					if (doc[key] <= value) {
 						items = items.slice(i+1, items.length)
 						break; 
 					}
