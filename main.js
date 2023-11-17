@@ -824,6 +824,11 @@ export function DB(options) {
 			this.next = function() {
 				return items[pos++];
 			};
+			this.modify = function(modifyFn) {
+				let ni = modifyFn(items)
+				if (ni != undefined) items = ni;
+				return this; 
+			}
 			this.noCursorTimeout = function() { throw "Not Implemented"; };
 			this.objsLeftInBatch = function() { throw "Not Implemented"; };
 			this.pretty = function() { throw "Not Implemented"; };
@@ -843,12 +848,12 @@ export function DB(options) {
 			this.sort = function(s) {
 				return new SortedCursor(collection,query,this,s);
 			};
-			this.point = function(key, value) {
+			this.point = function(key, value, off) {
 				let i = 0; 
 				while(items[i]) { 
 					let doc = items[i] 
 					if (doc[key] == value) {
-						items = items.slice(i+1, items.length)
+						items = items.slice(i+(off || 1), items.length)
 						break; 
 					}
 
